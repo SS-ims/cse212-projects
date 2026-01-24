@@ -21,8 +21,39 @@ public static class SetsAndMaps
     /// <param name="words">An array of 2-character words (lowercase, no duplicates)</param>
     public static string[] FindPairs(string[] words)
     {
-        // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+        // Track words we've seen so far for O(1) lookups.
+        var seen = new HashSet<string>();
+        // Store formatted symmetric pairs to return.
+        var pairs = new List<string>();
+
+        foreach (var word in words)
+        {
+            // Skip any unexpected non-2-character words.
+            if (word.Length != 2)
+            {
+                continue;
+            }
+
+            // Special case: identical letters (e.g., "aa") do not form pairs.
+            if (word[0] == word[1])
+            {
+                seen.Add(word);
+                continue;
+            }
+
+            // Build the reversed word to test for a symmetric match.
+            var reversed = new string(new[] { word[1], word[0] });
+            if (seen.Contains(reversed))
+            {
+                // Record the pair once when the reverse is already seen.
+                pairs.Add($"{word} & {reversed}");
+            }
+
+            // Mark this word as seen for future comparisons.
+            seen.Add(word);
+        }
+
+        return pairs.ToArray();
     }
 
     /// <summary>
@@ -38,11 +69,33 @@ public static class SetsAndMaps
     /// <returns>fixed array of divisors</returns>
     public static Dictionary<string, int> SummarizeDegrees(string filename)
     {
+        // Map degree name to count.
         var degrees = new Dictionary<string, int>();
         foreach (var line in File.ReadLines(filename))
         {
+            // Split CSV line into fields; degree is column 4 (index 3).
             var fields = line.Split(",");
-            // TODO Problem 2 - ADD YOUR CODE HERE
+            if (fields.Length < 4)
+            {
+                continue;
+            }
+
+            // Normalize the degree text and skip empty entries.
+            var degree = fields[3].Trim();
+            if (degree.Length == 0)
+            {
+                continue;
+            }
+
+            // Increment the counter for this degree.
+            if (degrees.TryGetValue(degree, out var count))
+            {
+                degrees[degree] = count + 1;
+            }
+            else
+            {
+                degrees[degree] = 1;
+            }
         }
 
         return degrees;
@@ -66,8 +119,55 @@ public static class SetsAndMaps
     /// </summary>
     public static bool IsAnagram(string word1, string word2)
     {
-        // TODO Problem 3 - ADD YOUR CODE HERE
-        return false;
+        // Count occurrences of each letter in the first word.
+        var counts = new Dictionary<char, int>();
+
+        foreach (var ch in word1.ToLowerInvariant())
+        {
+            // Ignore spaces.
+            if (ch == ' ')
+            {
+                continue;
+            }
+
+            // Tally characters from the first word.
+            if (counts.TryGetValue(ch, out var count))
+            {
+                counts[ch] = count + 1;
+            }
+            else
+            {
+                counts[ch] = 1;
+            }
+        }
+
+        foreach (var ch in word2.ToLowerInvariant())
+        {
+            // Ignore spaces.
+            if (ch == ' ')
+            {
+                continue;
+            }
+
+            // Every character in the second word must exist in the map.
+            if (!counts.TryGetValue(ch, out var count))
+            {
+                return false;
+            }
+
+            // Decrement and remove when count reaches zero.
+            if (count == 1)
+            {
+                counts.Remove(ch);
+            }
+            else
+            {
+                counts[ch] = count - 1;
+            }
+        }
+
+        // If all counts are balanced, the words are anagrams.
+        return counts.Count == 0;
     }
 
     /// <summary>
@@ -101,6 +201,27 @@ public static class SetsAndMaps
         // on those classes so that the call to Deserialize above works properly.
         // 2. Add code below to create a string out each place a earthquake has happened today and its magitude.
         // 3. Return an array of these string descriptions.
-        return [];
+        // If the JSON didn't deserialize correctly, return an empty array.
+        if (featureCollection?.Features == null)
+        {
+            return [];
+        }
+
+        // Build a formatted summary string for each earthquake.
+        var summaries = new List<string>();
+        foreach (var feature in featureCollection.Features)
+        {
+            var props = feature.Properties;
+            if (props?.Place == null)
+            {
+                continue;
+            }
+
+            // Use "0" when magnitude is missing.
+            var magText = props.Mag.HasValue ? props.Mag.Value.ToString() : "0";
+            summaries.Add($"{props.Place} - Mag {magText}");
+        }
+
+        return summaries.ToArray();
     }
 }

@@ -32,7 +32,17 @@ public class Maze
     /// </summary>
     public void MoveLeft()
     {
-        // FILL IN CODE
+        // Look up current cell's allowed moves (left, right, up, down).
+        var moves = _mazeMap[(_currX, _currY)];
+        // Index 0 corresponds to moving left.
+        if (!moves[0])
+        {
+            // A wall is present on the left.
+            throw new InvalidOperationException("Can't go that way!");
+        }
+
+        // Update position by decreasing x to move left.
+        _currX -= 1;
     }
 
     /// <summary>
@@ -41,7 +51,17 @@ public class Maze
     /// </summary>
     public void MoveRight()
     {
-        // FILL IN CODE
+        // Look up current cell's allowed moves (left, right, up, down).
+        var moves = _mazeMap[(_currX, _currY)];
+        // Index 1 corresponds to moving right.
+        if (!moves[1])
+        {
+            // A wall is present on the right.
+            throw new InvalidOperationException("Can't go that way!");
+        }
+
+        // Update position by increasing x to move right.
+        _currX += 1;
     }
 
     /// <summary>
@@ -50,7 +70,17 @@ public class Maze
     /// </summary>
     public void MoveUp()
     {
-        // FILL IN CODE
+        // Look up current cell's allowed moves (left, right, up, down).
+        var moves = _mazeMap[(_currX, _currY)];
+        // Index 2 corresponds to moving up.
+        if (!moves[2])
+        {
+            // A wall is present above.
+            throw new InvalidOperationException("Can't go that way!");
+        }
+
+        // Update position by decreasing y to move up.
+        _currY -= 1;
     }
 
     /// <summary>
@@ -59,7 +89,17 @@ public class Maze
     /// </summary>
     public void MoveDown()
     {
-        // FILL IN CODE
+        // Look up current cell's allowed moves (left, right, up, down).
+        var moves = _mazeMap[(_currX, _currY)];
+        // Index 3 corresponds to moving down.
+        if (!moves[3])
+        {
+            // A wall is present below.
+            throw new InvalidOperationException("Can't go that way!");
+        }
+
+        // Update position by increasing y to move down.
+        _currY += 1;
     }
 
     public string GetStatus()
