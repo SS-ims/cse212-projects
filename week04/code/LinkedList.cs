@@ -32,7 +32,21 @@ public class LinkedList : IEnumerable<int>
     /// </summary>
     public void InsertTail(int value)
     {
-        // TODO Problem 1
+        // Create a new node that will become the new tail.
+        Node newNode = new(value);
+        // If the list is empty, head and tail should both point to the new node.
+        if (_tail is null)
+        {
+            _head = newNode;
+            _tail = newNode;
+        }
+        // Otherwise, link the new node after the current tail and update tail.
+        else
+        {
+            newNode.Prev = _tail; // Connect new node back to the current tail
+            _tail.Next = newNode; // Connect current tail forward to the new node
+            _tail = newNode; // Update tail to point to the new node
+        }
     }
 
 
@@ -64,7 +78,18 @@ public class LinkedList : IEnumerable<int>
     /// </summary>
     public void RemoveTail()
     {
-        // TODO Problem 2
+        // If the list has 0 or 1 nodes, clearing head and tail empties the list.
+        if (_head == _tail)
+        {
+            _head = null;
+            _tail = null;
+        }
+        // If there are multiple nodes, disconnect the last node and update tail.
+        else if (_tail is not null)
+        {
+            _tail.Prev!.Next = null; // Disconnect the current tail from the list
+            _tail = _tail.Prev; // Move tail back one node
+        }
     }
 
     /// <summary>
@@ -108,7 +133,34 @@ public class LinkedList : IEnumerable<int>
     /// </summary>
     public void Remove(int value)
     {
-        // TODO Problem 3
+        // Start searching from the head for the first matching value.
+        Node? curr = _head;
+        while (curr is not null)
+        {
+            if (curr.Data == value)
+            {
+                // If the match is at the head, reuse RemoveHead to adjust pointers.
+                if (curr == _head)
+                {
+                    RemoveHead();
+                }
+                // If the match is at the tail, reuse RemoveTail to adjust pointers.
+                else if (curr == _tail)
+                {
+                    RemoveTail();
+                }
+                // Otherwise, bypass the current node by rewiring its neighbors.
+                else
+                {
+                    curr.Prev!.Next = curr.Next; // Link previous node to next node
+                    curr.Next!.Prev = curr.Prev; // Link next node back to previous node
+                }
+
+                return; // Stop after removing the first matching node
+            }
+
+            curr = curr.Next; // Move forward to continue searching
+        }
     }
 
     /// <summary>
@@ -116,7 +168,17 @@ public class LinkedList : IEnumerable<int>
     /// </summary>
     public void Replace(int oldValue, int newValue)
     {
-        // TODO Problem 4
+        // Walk the list from head to tail, replacing every matching value.
+        Node? curr = _head;
+        while (curr is not null)
+        {
+            if (curr.Data == oldValue)
+            {
+                curr.Data = newValue; // Replace the data in the current node
+            }
+
+            curr = curr.Next; // Move to the next node
+        }
     }
 
     /// <summary>
@@ -146,8 +208,13 @@ public class LinkedList : IEnumerable<int>
     /// </summary>
     public IEnumerable Reverse()
     {
-        // TODO Problem 5
-        yield return 0; // replace this line with the correct yield return statement(s)
+        // Start at the tail and walk backward using Prev links.
+        var curr = _tail;
+        while (curr is not null)
+        {
+            yield return curr.Data; // Yield each value from tail to head
+            curr = curr.Prev; // Move backward in the linked list
+        }
     }
 
     public override string ToString()
