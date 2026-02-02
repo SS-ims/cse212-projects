@@ -37,20 +37,24 @@ public class Node
     public bool Contains(int value)
     {
         // TODO Start Problem 2
+        // Base case: found the value at this node.
         if (value == Data)
             return true;
 
         if (value < Data)
         {
+            // Search the left subtree when the value is smaller.
             return Left is not null && Left.Contains(value);
         }
 
+        // Otherwise, search the right subtree.
         return Right is not null && Right.Contains(value);
     }
 
     public int GetHeight()
     {
         // TODO Start Problem 4
+        // Height is 1 + max(left height, right height).
         int leftHeight = Left?.GetHeight() ?? 0;
         int rightHeight = Right?.GetHeight() ?? 0;
         return 1 + System.Math.Max(leftHeight, rightHeight);
